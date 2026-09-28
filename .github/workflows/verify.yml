@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           pip install --upgrade pip
-          pip install triton
+          pip install triton numpy
       - name: Overlay standard.py
         if: ${{ inputs.overlay_url != '' }}
         run: |
