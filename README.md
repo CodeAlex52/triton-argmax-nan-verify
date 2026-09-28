@@ -1,0 +1,1 @@
+RED/GREEN verification workspace (cloud-only, disposable) for the triton argmin/argmax NaN-lane index fix.
