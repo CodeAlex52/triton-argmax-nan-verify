@@ -1,6 +1,6 @@
 import os
 os.environ["TRITON_INTERPRET"] = "1"
-import numpy as np
+import torch
 import triton
 import triton.language as tl
 from triton.language import core as tlc
@@ -28,11 +28,11 @@ def reduce_kernel(x_ptr, max_i_ptr, min_i_ptr, N: tl.constexpr):
     tl.store(min_i_ptr, min_i.to(tl.int32))
 
 
-x = np.array([-13.0, -1.0, 17.0, np.nan], dtype=np.float32)
-max_i = np.zeros(1, dtype=np.int32)
-min_i = np.zeros(1, dtype=np.int32)
+x = torch.tensor([-13.0, -1.0, 17.0, float("nan")], dtype=torch.float32)
+max_i = torch.zeros(1, dtype=torch.int32)
+min_i = torch.zeros(1, dtype=torch.int32)
 reduce_kernel[(1, )](x, max_i, min_i, N=4)
-print("max_idx:", max_i[0], "min_idx:", min_i[0])
-assert max_i[0] == 2, f"argmax index must be 2 (finite max 17.0), got {max_i[0]}"
-assert min_i[0] == 0, f"argmin index must be 0 (finite min -13.0), got {min_i[0]}"
+print("max_idx:", max_i.item(), "min_idx:", min_i.item())
+assert max_i.item() == 2, f"argmax index must be 2 (finite max 17.0), got {max_i.item()}"
+assert min_i.item() == 0, f"argmin index must be 0 (finite min -13.0), got {min_i.item()}"
 print("PASS: argmax/argmin indices follow the nan-ignore value semantics")
