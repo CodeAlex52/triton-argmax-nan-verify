@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           pip install --upgrade pip
-          pip install triton numpy
+          pip install triton numpy torch --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
       - name: Overlay standard.py
         if: ${{ inputs.overlay_url != '' }}
         run: |
