@@ -1,0 +1,41 @@
+name: argmax-nan-verify
+on:
+  workflow_dispatch:
+    inputs:
+      overlay_url:
+        description: "URL of standard.py overlay (empty = upstream main as-is)"
+        required: false
+        type: string
+      expect:
+        description: "red or green"
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout upstream triton at pinned SHA
+        uses: actions/checkout@v4
+        with:
+          repository: triton-lang/triton
+          ref: 86b92b86e96d18d415418d6ccfdd33f77129b1f9
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install triton (prebuilt wheel)
+        run: |
+          set -euo pipefail
+          pip install --upgrade pip
+          pip install triton
+      - name: Overlay standard.py
+        if: ${{ inputs.overlay_url != '' }}
+        run: |
+          set -euo pipefail
+          SITE=$(python -c "import triton, os; print(os.path.dirname(triton.__file__))")
+          curl -fsSL "${{ inputs.overlay_url }}" -o "$SITE/language/standard.py"
+          echo "overlaid $SITE/language/standard.py"
+      - name: Run combine-semantics probe
+        run: |
+          set -euo pipefail
+          TRITON_INTERPRET=1 python check_combine.py 2>&1 | tee combine-check.log
