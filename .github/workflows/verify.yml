@@ -35,6 +35,10 @@ jobs:
           SITE=$(python -c "import triton, os; print(os.path.dirname(triton.__file__))")
           curl -fsSL "${{ inputs.overlay_url }}" -o "$SITE/language/standard.py"
           echo "overlaid $SITE/language/standard.py"
+      - name: Fetch probe script
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://raw.githubusercontent.com/CodeAlex52/triton-argmax-nan-verify/main/check_combine.py" -o check_combine.py
       - name: Run combine-semantics probe
         run: |
           set -euo pipefail
